@@ -4,7 +4,14 @@ const app = express();
 const site = await Bun.file("./index.html").text();
 
 app.get("/", async (req, res) => {
-  let greet = site.replace("%%_USER_NAME%%", req.query.name);
+  const safeName =
+    String(req.query.name || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    let greet = site.replace("%%_USER_NAME%%", safeName);
   res.send(greet);
 });
 
